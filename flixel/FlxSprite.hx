@@ -208,8 +208,8 @@ class FlxSprite extends FlxObject
 	public var bakedRotationAngle(default, null):Float = 0;
 
 	/**
-	 * Set alpha to a number between `0` and `1` to change the opacity of the sprite.
-	 @see https://snippets.haxeflixel.com/sprites/alpha/
+		* Set alpha to a number between `0` and `1` to change the opacity of the sprite.
+		@see https://snippets.haxeflixel.com/sprites/alpha/
 	 */
 	public var alpha(default, set):Float = 1.0;
 
@@ -982,8 +982,8 @@ class FlxSprite extends FlxObject
 	 * @param   blueOffset        The offset for the blue color channel value, in the range from `-255` to `255`.
 	 * @param   alphaOffset       The offset for alpha transparency channel value, in the range from `-255` to `255`.
 	 */
-	public function setColorTransform(redMultiplier = 1.0, greenMultiplier = 1.0, blueMultiplier = 1.0, alphaMultiplier = 1.0,
-			redOffset = 0.0, greenOffset = 0.0, blueOffset = 0.0, alphaOffset = 0.0):Void
+	public function setColorTransform(redMultiplier = 1.0, greenMultiplier = 1.0, blueMultiplier = 1.0, alphaMultiplier = 1.0, redOffset = 0.0,
+			greenOffset = 0.0, blueOffset = 0.0, alphaOffset = 0.0):Void
 	{
 		color = FlxColor.fromRGBFloat(redMultiplier, greenMultiplier, blueMultiplier).to24Bit();
 		alpha = alphaMultiplier;
@@ -1025,7 +1025,7 @@ class FlxSprite extends FlxObject
 		
 		if (pixelColor != null)
 			return pixelColor.alpha * alpha >= alphaTolerance;
-		
+
 		// point is outside of the graphic
 		return false;
 	}
@@ -1089,7 +1089,7 @@ class FlxSprite extends FlxObject
 	{
 		if (camera == null)
 			camera = FlxG.camera;
-		
+
 		var screenPoint = FlxPoint.weak(worldPoint.x - camera.scroll.x, worldPoint.y - camera.scroll.y);
 		worldPoint.putWeak();
 		return transformScreenToPixels(screenPoint, camera, result);
@@ -1210,15 +1210,42 @@ class FlxSprite extends FlxObject
 	/**
 	 * Retrieve the midpoint of this sprite's graphic in world coordinates.
 	 *
-	 * @param   point   Allows you to pass in an existing `FlxPoint` if you're so inclined.
-	 *                  Otherwise a new one is created.
-	 * @return  A `FlxPoint` containing the midpoint of this sprite's graphic in world coordinates.
+	 * @param   point  The resulting point, if `null` a new one is created
 	 */
 	public function getGraphicMidpoint(?point:FlxPoint):FlxPoint
 	{
-		if (point == null)
-			point = FlxPoint.get();
-		return point.set(x + frameWidth * 0.5, y + frameHeight * 0.5);
+		final rect = getGraphicBounds();
+		point = rect.getMidpoint(point);
+		rect.put();
+		return point;
+	}
+	
+	/**
+	 * Retrieves the world bounds of this sprite's graphic
+	 * **Note:** Ignores `scrollFactor`, to get the screen position of the graphic use
+	 * `getScreenBounds`
+	 *
+	 * @param   rect  The resulting rect, if `null` a new one is created
+	 * @since 5.9.0
+	 */
+	public function getGraphicBounds(?rect:FlxRect):FlxRect
+	{
+		if (rect == null)
+			rect = FlxRect.get();
+			
+		rect.set(x, y);
+		if (pixelPerfectPosition)
+			rect.floor();
+			
+		_scaledOrigin.set(origin.x * scale.x, origin.y * scale.y);
+		rect.x += origin.x - offset.x - _scaledOrigin.x;
+		rect.y += origin.y - offset.y - _scaledOrigin.y;
+		rect.setSize(frameWidth * scale.x, frameHeight * scale.y);
+		
+		if (angle % 360 != 0)
+			rect.getRotatedBounds(angle, _scaledOrigin, rect);
+			
+		return rect;
 	}
 
 	/**
@@ -1232,7 +1259,7 @@ class FlxSprite extends FlxObject
 	{
 		if (camera == null)
 			camera = FlxG.camera;
-		
+
 		return camera.containsRect(getScreenBounds(_rect, camera));
 	}
 
@@ -1276,7 +1303,7 @@ class FlxSprite extends FlxObject
 	{
 		if (newRect == null)
 			newRect = FlxRect.get();
-		
+
 		newRect.set(x, y, width, height);
 		return newRect.getRotatedBounds(angle, origin, newRect);
 	}
@@ -1293,10 +1320,10 @@ class FlxSprite extends FlxObject
 	{
 		if (newRect == null)
 			newRect = FlxRect.get();
-		
+
 		if (camera == null)
 			camera = FlxG.camera;
-		
+
 		newRect.setPosition(x, y);
 		if (pixelPerfectPosition)
 			newRect.floor();
@@ -1508,11 +1535,11 @@ class FlxSprite extends FlxObject
 			// If new graphic is not null, increase its use count
 			if (value != null)
 				value.incrementUseCount();
-			
+
 			// If old graphic is not null, decrease its use count
 			if (graphic != null)
 				graphic.decrementUseCount();
-			
+
 			graphic = value;
 		}
 		
@@ -1567,6 +1594,7 @@ class FlxSprite extends FlxObject
 
 		return Frames;
 	}
+
 	function get_numFrames()
 	{
 		if (frames != null)

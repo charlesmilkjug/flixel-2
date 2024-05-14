@@ -51,8 +51,8 @@ class FlxKeyboard extends FlxKeyManager<FlxKey, FlxKeyList>
 		_nativeCorrection.set("123_222", FlxKey.LBRACKET);
 		_nativeCorrection.set("125_187", FlxKey.RBRACKET);
 		_nativeCorrection.set("126_233", FlxKey.GRAVEACCENT);
-		#if mac _nativeCorrection.set("0_43", FlxKey.PLUS); #end
-
+		_nativeCorrection.set("0_43", FlxKey.PLUS);
+		
 		_nativeCorrection.set("0_80", FlxKey.F1);
 		_nativeCorrection.set("0_81", FlxKey.F2);
 		_nativeCorrection.set("0_82", FlxKey.F3);
@@ -168,16 +168,16 @@ class FlxKeyboard extends FlxKeyManager<FlxKey, FlxKeyList>
 	 * @param	Record	Array of data about key states.
 	 */
 	@:allow(flixel.system.replay.FlxReplay)
-	function playback(Record:Array<CodeValuePair>):Void
+	function playback(record:Array<CodeValuePair>):Void
 	{
-		var i:Int = 0;
-		var l:Int = Record.length;
-
-		while (i < l)
+		var i = 0;
+		final len = record.length;
+		
+		while (i < len)
 		{
-			var o = Record[i++];
-			var o2 = getKey(o.code);
-			o2.current = o.value;
+			final keyRecord = record[i++];
+			final key = getKey(keyRecord.code);
+			key.current = keyRecord.value;
 		}
 	}
 }

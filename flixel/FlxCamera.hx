@@ -25,6 +25,7 @@ import openfl.Vector;
 import openfl.display.BlendMode;
 import openfl.filters.BitmapFilter;
 
+using StringTools;
 using flixel.util.FlxColorTransformUtil;
 
 private typedef FlxDrawItem = flixel.graphics.tile.FlxDrawQuadsItem;
@@ -260,7 +261,6 @@ class FlxCamera extends FlxBasic
 	public var viewMarginY(default, null):Float;
 
 	// deprecated vars
-
 	@:deprecated("use viewMarginLeft or viewMarginX")
 	var viewOffsetX(get, set):Float;
 	@:deprecated("use viewMarginTop or viewMarginY")
@@ -635,8 +635,9 @@ class FlxCamera extends FlxBasic
 			itemToReturn = new FlxDrawItem();
 		}
 
-		if (graphic.isDestroyed) throw 'Attempted to queue an invalid FlxDrawItem, did you destroy a cached sprite?';
-
+		if (graphic.isDestroyed)
+			throw 'Attempted to queue an invalid FlxDrawItem, did you destroy a cached sprite?';
+			
 		itemToReturn.graphics = graphic;
 		itemToReturn.antialiasing = smooth;
 		itemToReturn.colored = colored;
@@ -665,7 +666,8 @@ class FlxCamera extends FlxBasic
 	}
 
 	@:noCompletion
-	public function startTrianglesBatch(graphic:FlxGraphic, smoothing:Bool = false, isColored:Bool = false, ?blend:BlendMode, ?hasColorOffsets:Bool, ?shader:FlxShader):FlxDrawTrianglesItem
+	public function startTrianglesBatch(graphic:FlxGraphic, smoothing:Bool = false, isColored:Bool = false, ?blend:BlendMode, ?hasColorOffsets:Bool,
+			?shader:FlxShader):FlxDrawTrianglesItem
 	{
 		var blendInt:Int = FlxDrawBaseItem.blendToInt(blend);
 
@@ -674,12 +676,10 @@ class FlxCamera extends FlxBasic
 			&& _headTriangles.graphics == graphic
 			&& _headTriangles.antialiasing == smoothing
 			&& _headTriangles.colored == isColored
-			&& _headTriangles.blending == blendInt
-			#if !flash
+			&& _headTriangles.blending == blendInt #if !flash
 			&& _headTriangles.hasColorOffsets == hasColorOffsets
-			&& _headTriangles.shader == shader
-			#end
-			)
+			&& _headTriangles.shader == shader #end
+		)
 		{
 			return _headTriangles;
 		}
@@ -688,7 +688,8 @@ class FlxCamera extends FlxBasic
 	}
 
 	@:noCompletion
-	public function getNewDrawTrianglesItem(graphic:FlxGraphic, smoothing:Bool = false, isColored:Bool = false, ?blend:BlendMode, ?hasColorOffsets:Bool, ?shader:FlxShader):FlxDrawTrianglesItem
+	public function getNewDrawTrianglesItem(graphic:FlxGraphic, smoothing:Bool = false, isColored:Bool = false, ?blend:BlendMode, ?hasColorOffsets:Bool,
+			?shader:FlxShader):FlxDrawTrianglesItem
 	{
 		var itemToReturn:FlxDrawTrianglesItem = null;
 		var blendInt:Int = FlxDrawBaseItem.blendToInt(blend);
@@ -1603,15 +1604,41 @@ class FlxCamera extends FlxBasic
 	}
 
 	/**
-	 * Just turns off all the camera effects instantly.
+	 * Stops the fade effect on `this` camera.
+	 */
+	public function stopFade():Void
+	{
+		_fxFadeAlpha = 0.0;
+		_fxFadeDuration = 0.0;
+	}
+	
+	/**
+	 * Stops the flash effect on `this` camera.
+	 */
+	public function stopFlash():Void
+	{
+		_fxFlashAlpha = 0.0;
+		updateFlashSpritePosition();
+	}
+	
+	/**
+	 * Stops the shake effect on `this` camera.
+	 */
+	public function stopShake():Void
+	{
+		_fxShakeDuration = 0.0;
+	}
+	
+	/**
+	 * Stops all effects on `this` camera.
 	 */
 	public function stopFX():Void
 	{
-		_fxFlashAlpha = 0.0;
 		_fxFadeAlpha = 0.0;
 		_fxFadeDuration = 0.0;
-		_fxShakeDuration = 0.0;
+		_fxFlashAlpha = 0.0;
 		updateFlashSpritePosition();
+		_fxShakeDuration = 0.0;
 	}
 
 	/**
@@ -1909,8 +1936,7 @@ class FlxCamera extends FlxBasic
 	 */
 	public inline function containsPoint(point:FlxPoint, width:Float = 0, height:Float = 0):Bool
 	{
-		var contained = (point.x + width > viewMarginLeft) && (point.x < viewMarginRight)
-			&& (point.y + height > viewMarginTop) && (point.y < viewMarginBottom);
+		var contained = (point.x + width > viewMarginLeft) && (point.x < viewMarginRight) && (point.y + height > viewMarginTop) && (point.y < viewMarginBottom);
 		point.putWeak();
 		return contained;
 	}
@@ -1921,8 +1947,7 @@ class FlxCamera extends FlxBasic
 	 */
 	public inline function containsRect(rect:FlxRect):Bool
 	{
-		var contained = (rect.right > viewMarginLeft) && (rect.x < viewMarginRight)
-			&& (rect.bottom > viewMarginTop) && (rect.y < viewMarginBottom);
+		var contained = (rect.right > viewMarginLeft) && (rect.x < viewMarginRight) && (rect.bottom > viewMarginTop) && (rect.y < viewMarginBottom);
 		rect.putWeak();
 		return contained;
 	}
@@ -2058,11 +2083,13 @@ class FlxCamera extends FlxBasic
 	}
 
 	@:deprecated("Use calcMarginX")
-	inline function calcOffsetX():Void calcMarginX();
-
+	inline function calcOffsetX():Void
+		calcMarginX();
+		
 	@:deprecated("Use calcMarginY")
-	inline function calcOffsetY():Void calcMarginY();
-
+	inline function calcOffsetY():Void
+		calcMarginY();
+		
 	inline function calcMarginX():Void
 	{
 		viewMarginX = 0.5 * width * (scaleX - initialZoom) / scaleX;
@@ -2191,20 +2218,23 @@ class FlxCamera extends FlxBasic
 	 */
 	@:deprecated("don't reference camera.camera")
 	@:noCompletion
-	override function get_camera():FlxCamera throw "don't reference camera.camera";
-
+	override function get_camera():FlxCamera
+		throw "don't reference camera.camera";
+		
 	@:deprecated("don't reference camera.camera")
 	@:noCompletion
-	override function set_camera(value:FlxCamera):FlxCamera throw "don't reference camera.camera";
-
+	override function set_camera(value:FlxCamera):FlxCamera
+		throw "don't reference camera.camera";
+		
 	@:deprecated("don't reference camera.cameras")
 	@:noCompletion
-	override function get_cameras():Array<FlxCamera> throw "don't reference camera.cameras";
-
+	override function get_cameras():Array<FlxCamera>
+		throw "don't reference camera.cameras";
+		
 	@:deprecated("don't reference camera.cameras")
 	@:noCompletion
-	override function set_cameras(value:Array<FlxCamera>):Array<FlxCamera> throw "don't reference camera.cameras";
-
+	override function set_cameras(value:Array<FlxCamera>):Array<FlxCamera>
+		throw "don't reference camera.cameras";
 }
 
 enum FlxCameraFollowStyle

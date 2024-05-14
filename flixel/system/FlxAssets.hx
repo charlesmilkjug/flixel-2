@@ -49,7 +49,6 @@ abstract FlxAngelCodeAsset(OneOfThree<Xml, String, Bytes>) from Xml from String 
 	}
 }
 
-
 @:deprecated("`FlxAngelCodeXmlAsset` is deprecated, use `FlxAngelCodeAsset` instead")
 typedef FlxAngelCodeXmlAsset = FlxAngelCodeAsset;
 
@@ -180,8 +179,8 @@ class FlxAssets
 	 * @see [Flixel 5.0.0 Migration guide - AssetPaths has less caveats](https://github.com/HaxeFlixel/flixel/wiki/Flixel-5.0.0-Migration-guide#assetpaths-has-less-caveats-2575)
 	 * @see [Haxe Macros: Code completion for everything](http://blog.stroep.nl/2014/01/haxe-macros/)
 	**/
-	public static function buildFileReferences(directory = "assets/", subDirectories = false, ?include:Expr, ?exclude:Expr,
-			?rename:String->Null<String>, listField = "allFiles"):Array<Field>
+	public static function buildFileReferences(directory = "assets/", subDirectories = false, ?include:Expr, ?exclude:Expr, ?rename:String->Null<String>,
+			listField = "allFiles"):Array<Field>
 	{
 		#if doc_gen
 		return [];
@@ -276,7 +275,7 @@ class FlxAssets
 	public static inline function getBitmapData(id:String):BitmapData
 	{
 		if (Assets.exists(id))
-			return Assets.getBitmapData(id, false);
+			return Assets.getBitmapData(id, true);
 		FlxG.log.error('Could not find a BitmapData asset with ID \'$id\'.');
 		return null;
 	}

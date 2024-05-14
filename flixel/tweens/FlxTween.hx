@@ -11,6 +11,7 @@ import flixel.tweens.misc.AngleTween;
 import flixel.tweens.misc.ColorTween;
 import flixel.tweens.misc.NumTween;
 import flixel.tweens.misc.VarTween;
+import flixel.tweens.misc.FlickerTween;
 import flixel.tweens.motion.CircularMotion;
 import flixel.tweens.motion.CubicMotion;
 import flixel.tweens.motion.LinearMotion;
@@ -29,22 +30,22 @@ enum abstract FlxTweenType(Int) from Int to Int
 	 * Persistent Tween type, will stop when it finishes.
 	 */
 	var PERSIST = 1;
-
+	
 	/**
 	 * Looping Tween type, will restart immediately when it finishes.
 	 */
 	var LOOPING = 2;
-
+	
 	/**
 	 * "To and from" Tween type, will play tween hither and thither
 	 */
 	var PINGPONG = 4;
-
+	
 	/**
 	 * Oneshot Tween type, will stop and remove itself from its core container when it finishes.
 	 */
 	var ONESHOT = 8;
-
+	
 	/**
 	 * Backward Tween type, will play tween in reverse direction
 	 */
@@ -179,37 +180,37 @@ class FlxTween implements IFlxDestroyable
 	 */
 	@:deprecated("Use FlxTweenType.PERSIST instead")
 	public static var PERSIST = FlxTweenType.PERSIST;
-
+	
 	/**
 	 * Deprecated, use `FlxTweenType.LOOPING` instead.
 	 */
 	@:deprecated("Use FlxTweenType.LOOPING instead")
 	public static var LOOPING = FlxTweenType.LOOPING;
-
+	
 	/**
 	 * Deprecated, use `FlxTweenType.PINGPONG` instead.
 	 */
 	@:deprecated("Use FlxTweenType.PINGPONG instead")
 	public static var PINGPONG = FlxTweenType.PINGPONG;
-
+	
 	/**
 	 * Deprecated, use `FlxTweenType.ONESHOT` instead.
 	 */
 	@:deprecated("Use FlxTweenType.ONESHOT instead")
 	public static var ONESHOT = FlxTweenType.ONESHOT;
-
+	
 	/**
 	 * Deprecated, use `FlxTweenType.BACKWARD` instead.
 	 */
 	@:deprecated("Use FlxTweenType.BACKWARD instead")
 	public static var BACKWARD = FlxTweenType.BACKWARD;
-
+	
 	/**
 	 * The global tweening manager that handles global tweens
 	 * @since 4.2.0
 	 */
 	public static var globalManager:FlxTweenManager;
-
+	
 	/**
 	 * Tweens numeric public properties of an Object. Shorthand for creating a VarTween, starting it and adding it to the TweenManager.
 	 *
@@ -227,7 +228,7 @@ class FlxTween implements IFlxDestroyable
 	{
 		return globalManager.tween(Object, Values, Duration, Options);
 	}
-
+	
 	/**
 	 * Tweens some numeric value. Shorthand for creating a NumTween, starting it and adding it to the TweenManager. Using it in
 	 * conjunction with a TweenFunction requires more setup, but is faster than VarTween because it doesn't use Reflection.
@@ -252,7 +253,39 @@ class FlxTween implements IFlxDestroyable
 	{
 		return globalManager.num(FromValue, ToValue, Duration, Options, TweenFunction);
 	}
-
+	
+	/**
+	 * Flickers the desired object
+	 *
+	 * @param   basic     The object to flicker
+	 * @param   duration  Duration of the tween, in seconds
+	 * @param   period    How often, in seconds, the visibility cycles
+	 * @param   options   A structure with flicker and tween options
+	 * @since 5.7.0
+	 */
+	public static function flicker(basic:FlxBasic, duration = 1.0, period = 0.08, ?options:FlickerTweenOptions)
+	{
+		return globalManager.flicker(basic, duration, period, options);
+	}
+	
+	/**
+	 * Whether the object is flickering via the global tween manager
+	 * @since 5.7.0
+	 */
+	public static function isFlickering(basic:FlxBasic)
+	{
+		return globalManager.isFlickering(basic);
+	}
+	
+	/**
+	 * Cancels all flicker tweens on the object in the global tween manager
+	 * @since 5.7.0
+	 */
+	public static function stopFlickering(basic:FlxBasic)
+	{
+		return globalManager.stopFlickering(basic);
+	}
+	
 	/**
 	 * A simple shake effect for FlxSprite. Shorthand for creating a ShakeTween, starting it and adding it to the TweenManager.
 	 *
@@ -272,7 +305,7 @@ class FlxTween implements IFlxDestroyable
 	{
 		return globalManager.shake(Sprite, Intensity, Duration, Axes, Options);
 	}
-
+	
 	/**
 	 * Tweens numeric value which represents angle. Shorthand for creating a AngleTween object, starting it and adding it to the TweenManager.
 	 *
@@ -291,7 +324,7 @@ class FlxTween implements IFlxDestroyable
 	{
 		return globalManager.angle(Sprite, FromAngle, ToAngle, Duration, Options);
 	}
-
+	
 	/**
 	 * Tweens numeric value which represents color. Shorthand for creating a ColorTween object, starting it and adding it to a TweenPlugin.
 	 *
@@ -310,7 +343,7 @@ class FlxTween implements IFlxDestroyable
 	{
 		return globalManager.color(Sprite, Duration, FromColor, ToColor, Options);
 	}
-
+	
 	/**
 	 * Create a new LinearMotion tween.
 	 *
@@ -333,7 +366,7 @@ class FlxTween implements IFlxDestroyable
 	{
 		return globalManager.linearMotion(Object, FromX, FromY, ToX, ToY, DurationOrSpeed, UseDuration, Options);
 	}
-
+	
 	/**
 	 * Create a new QuadMotion tween.
 	 *
@@ -358,7 +391,7 @@ class FlxTween implements IFlxDestroyable
 	{
 		return globalManager.quadMotion(Object, FromX, FromY, ControlX, ControlY, ToX, ToY, DurationOrSpeed, UseDuration, Options);
 	}
-
+	
 	/**
 	 * Create a new CubicMotion tween.
 	 *
@@ -384,7 +417,7 @@ class FlxTween implements IFlxDestroyable
 	{
 		return globalManager.cubicMotion(Object, FromX, FromY, aX, aY, bX, bY, ToX, ToY, Duration, Options);
 	}
-
+	
 	/**
 	 * Create a new CircularMotion tween.
 	 *
@@ -409,7 +442,7 @@ class FlxTween implements IFlxDestroyable
 	{
 		return globalManager.circularMotion(Object, CenterX, CenterY, Radius, Angle, Clockwise, DurationOrSpeed, UseDuration, Options);
 	}
-
+	
 	/**
 	 * Create a new LinearPath tween.
 	 *
@@ -429,7 +462,7 @@ class FlxTween implements IFlxDestroyable
 	{
 		return globalManager.linearPath(Object, Points, DurationOrSpeed, UseDuration, Options);
 	}
-
+	
 	/**
 	 * Create a new QuadPath tween.
 	 *
@@ -449,7 +482,7 @@ class FlxTween implements IFlxDestroyable
 	{
 		return globalManager.quadPath(Object, Points, DurationOrSpeed, UseDuration, Options);
 	}
-
+	
 	/**
 	 * Cancels all related tweens on the specified object.
 	 *
@@ -466,7 +499,7 @@ class FlxTween implements IFlxDestroyable
 	{
 		globalManager.cancelTweensOf(Object, FieldPaths);
 	}
-
+	
 	/**
 	 * Immediately updates all tweens on the specified object with the specified fields that
 	 * are not looping (type `FlxTween.LOOPING` or `FlxTween.PINGPONG`) and `active` through
@@ -492,62 +525,68 @@ class FlxTween implements IFlxDestroyable
 	{
 		globalManager.completeTweensOf(Object, FieldPaths);
 	}
-
+	
 	/**
 	 * The manager to which this tween belongs
 	 * @since 4.2.0
 	 */
 	public var manager:FlxTweenManager;
-
+	
 	public var active(default, set):Bool = false;
 	public var duration:Float = 0;
 	public var ease:EaseFunction;
 	public var onStart:TweenCallback;
 	public var onUpdate:TweenCallback;
 	public var onComplete:TweenCallback;
-
+	
 	public var type(default, set):FlxTweenType;
-
+	
 	/**
 	 * Value between `0` and `1` that indicates how far along this tween is in its completion.
 	 * A value of `0.33` means that the tween is `33%` complete.
 	 */
 	public var percent(get, set):Float;
-
+	
 	public var finished(default, null):Bool;
 	public var scale(default, null):Float = 0;
 	public var backward(default, null):Bool;
-
+	
+	/**
+	 * The total time passed since start
+	 * @since 5.7.0
+	 */
+	public var time(get, never):Float;
+	
 	/**
 	 * How many times this tween has been executed / has finished so far - useful to
 	 * stop the `LOOPING` and `PINGPONG` types after a certain amount of time
 	 */
 	public var executions(default, null):Int = 0;
-
+	
 	/**
 	 * Seconds to wait until starting this tween, 0 by default
 	 */
 	public var startDelay(default, set):Float = 0;
-
+	
 	/**
 	 * Seconds to wait between loops of this tween, 0 by default
 	 */
 	public var loopDelay(default, set):Float = 0;
-
+	
 	var _secondsSinceStart:Float = 0;
 	var _delayToUse:Float = 0;
 	var _running:Bool = false;
 	var _waitingForRestart:Bool = false;
 	var _chainedTweens:Array<FlxTween>;
 	var _nextTweenInChain:FlxTween;
-
+	
 	/**
 	 * This function is called when tween is created, or recycled.
 	 */
 	function new(Options:TweenOptions, ?manager:FlxTweenManager):Void
 	{
 		Options = resolveTweenOptions(Options);
-
+		
 		type = Options.type;
 		onStart = Options.onStart;
 		onUpdate = Options.onUpdate;
@@ -556,18 +595,18 @@ class FlxTween implements IFlxDestroyable
 		setDelays(Options.startDelay, Options.loopDelay);
 		this.manager = manager != null ? manager : globalManager;
 	}
-
+	
 	function resolveTweenOptions(Options:TweenOptions):TweenOptions
 	{
 		if (Options == null)
 			Options = {type: FlxTweenType.ONESHOT};
-
+			
 		if (Options.type == null)
 			Options.type = FlxTweenType.ONESHOT;
-
+			
 		return Options;
 	}
-
+	
 	public function destroy():Void
 	{
 		onStart = null;
@@ -578,7 +617,7 @@ class FlxTween implements IFlxDestroyable
 		_chainedTweens = null;
 		_nextTweenInChain = null;
 	}
-
+	
 	/**
 	 * Specify a tween to be executed when this one has finished
 	 * (useful for creating "tween chains").
@@ -587,7 +626,7 @@ class FlxTween implements IFlxDestroyable
 	{
 		return addChainedTween(tween);
 	}
-
+	
 	/**
 	 * How many seconds to delay the execution of the next tween in a tween chain.
 	 */
@@ -595,19 +634,19 @@ class FlxTween implements IFlxDestroyable
 	{
 		return addChainedTween(FlxTween.num(0, 0, delay));
 	}
-
+	
 	function addChainedTween(tween:FlxTween):FlxTween
 	{
 		tween.setVarsOnEnd();
 		tween.manager.remove(tween, false);
-
+		
 		if (_chainedTweens == null)
 			_chainedTweens = [];
-
+			
 		_chainedTweens.push(tween);
 		return this;
 	}
-
+	
 	function update(elapsed:Float):Void
 	{
 		_secondsSinceStart += elapsed;
@@ -642,7 +681,7 @@ class FlxTween implements IFlxDestroyable
 				onUpdate(this);
 		}
 	}
-
+	
 	/**
 	 * Starts the Tween, or restarts it if it's currently running.
 	 */
@@ -661,7 +700,7 @@ class FlxTween implements IFlxDestroyable
 		finished = false;
 		return this;
 	}
-
+	
 	/**
 	 * Immediately stops the Tween and removes it from its
 	 * `manager` without calling the `onComplete` callback.
@@ -671,11 +710,11 @@ class FlxTween implements IFlxDestroyable
 	public function cancel():Void
 	{
 		onEnd();
-
+		
 		if (manager != null)
 			manager.remove(this);
 	}
-
+	
 	/**
 	 * Immediately stops the Tween and removes it from its
 	 * `manager` without calling the `onComplete` callback
@@ -691,44 +730,44 @@ class FlxTween implements IFlxDestroyable
 		// Pass along the cancellation request.
 		if (_nextTweenInChain != null)
 			_nextTweenInChain.cancelChain();
-
+			
 		// Prevent yielding control to any chained tweens.
 		if (_chainedTweens != null)
 			_chainedTweens = null;
-
+			
 		cancel();
 	}
-
+	
 	function finish():Void
 	{
 		executions++;
-
+		
 		if (onComplete != null)
 			onComplete(this);
-
+			
 		var type = type & ~FlxTweenType.BACKWARD;
-
+		
 		if (type == FlxTweenType.PERSIST || type == FlxTweenType.ONESHOT)
 		{
 			onEnd();
 			_secondsSinceStart = duration + startDelay;
-
+			
 			if (type == FlxTweenType.ONESHOT && manager != null)
 			{
 				manager.remove(this);
 			}
 		}
-
+		
 		if (type == FlxTweenType.LOOPING || type == FlxTweenType.PINGPONG)
 		{
 			_secondsSinceStart = (_secondsSinceStart - _delayToUse) % duration + _delayToUse;
 			scale = Math.max((_secondsSinceStart - _delayToUse), 0) / duration;
-
+			
 			if (ease != null && scale > 0 && scale < 1)
 			{
 				scale = ease(scale);
 			}
-
+			
 			if (type == FlxTweenType.PINGPONG)
 			{
 				backward = !backward;
@@ -737,11 +776,11 @@ class FlxTween implements IFlxDestroyable
 					scale = 1 - scale;
 				}
 			}
-
+			
 			restart();
 		}
 	}
-
+	
 	/**
 	 * Called when the tween ends, either via finish() or cancel().
 	 */
@@ -750,26 +789,26 @@ class FlxTween implements IFlxDestroyable
 		setVarsOnEnd();
 		processTweenChain();
 	}
-
+	
 	function setVarsOnEnd():Void
 	{
 		active = false;
 		_running = false;
 		finished = true;
 	}
-
+	
 	function processTweenChain():Void
 	{
 		if (_chainedTweens == null || _chainedTweens.length <= 0)
 			return;
-
+			
 		// Remember next tween to enable cancellation of the chain.
 		_nextTweenInChain = _chainedTweens.shift();
-
+		
 		doNextTween(_nextTweenInChain);
 		_chainedTweens = null;
 	}
-
+	
 	function doNextTween(tween:FlxTween):Void
 	{
 		if (!tween.active)
@@ -777,21 +816,21 @@ class FlxTween implements IFlxDestroyable
 			tween.start();
 			manager.add(tween);
 		}
-
+		
 		tween.setChain(_chainedTweens);
 	}
-
+	
 	function setChain(previousChain:Array<FlxTween>):Void
 	{
 		if (previousChain == null)
 			return;
-
+			
 		if (_chainedTweens == null)
 			_chainedTweens = previousChain;
 		else
 			_chainedTweens = _chainedTweens.concat(previousChain);
 	}
-
+	
 	/**
 	 * In case the tween.active was set to false in onComplete(),
 	 * the tween should not be restarted yet.
@@ -807,7 +846,7 @@ class FlxTween implements IFlxDestroyable
 			_waitingForRestart = true;
 		}
 	}
-
+	
 	/**
 	 * Returns true if this is tweening the specified field on the specified object.
 	 * 
@@ -833,7 +872,7 @@ class FlxTween implements IFlxDestroyable
 		loopDelay = (LoopDelay != null) ? LoopDelay : 0;
 		return this;
 	}
-
+	
 	function set_startDelay(value:Float):Float
 	{
 		var dly:Float = Math.abs(value);
@@ -843,7 +882,7 @@ class FlxTween implements IFlxDestroyable
 		}
 		return startDelay = dly;
 	}
-
+	
 	function set_loopDelay(value:Null<Float>):Float
 	{
 		var dly:Float = Math.abs(value);
@@ -854,17 +893,22 @@ class FlxTween implements IFlxDestroyable
 		}
 		return loopDelay = dly;
 	}
-
+	
+	inline function get_time():Float
+	{
+		return Math.max(_secondsSinceStart - _delayToUse, 0);
+	}
+	
 	inline function get_percent():Float
 	{
-		return Math.max((_secondsSinceStart - _delayToUse), 0) / duration;
+		return time / duration;
 	}
-
+	
 	function set_percent(value:Float):Float
 	{
 		return _secondsSinceStart = duration * value + _delayToUse;
 	}
-
+	
 	function set_type(value:Int):Int
 	{
 		if (value == 0)
@@ -875,18 +919,18 @@ class FlxTween implements IFlxDestroyable
 		{
 			value = FlxTweenType.PERSIST | FlxTweenType.BACKWARD;
 		}
-
+		
 		backward = (value & FlxTweenType.BACKWARD) > 0;
 		return type = value;
 	}
-
+	
 	function set_active(active:Bool):Bool
 	{
 		this.active = active;
-
+		
 		if (_waitingForRestart)
 			restart();
-
+			
 		return active;
 	}
 }
@@ -899,32 +943,32 @@ typedef TweenOptions =
 	 * Tween type - bit field of `FlxTween`'s static type constants.
 	 */
 	@:optional var type:FlxTweenType;
-
+	
 	/**
 	 * Optional easer function (see `FlxEase`).
 	 */
 	@:optional var ease:EaseFunction;
-
+	
 	/**
 	 * Optional start callback function.
 	 */
 	@:optional var onStart:TweenCallback;
-
+	
 	/**
 	 * Optional update callback function.
 	 */
 	@:optional var onUpdate:TweenCallback;
-
+	
 	/**
 	 * Optional complete callback function.
 	 */
 	@:optional var onComplete:TweenCallback;
-
+	
 	/**
 	 * Seconds to wait until starting this tween, `0` by default.
 	 */
 	@:optional var startDelay:Float;
-
+	
 	/**
 	 * Seconds to wait between loops of this tween, `0` by default.
 	 */
@@ -943,14 +987,14 @@ class FlxTweenManager extends FlxBasic
 	 * A list of all FlxTween objects.
 	 */
 	var _tweens(default, null):Array<FlxTween> = [];
-
+	
 	public function new():Void
 	{
 		super();
 		visible = false; // No draw-calls needed
 		FlxG.signals.preStateSwitch.add(clear);
 	}
-
+	
 	/**
 	 * Tweens numeric public properties of an Object. Shorthand for creating a VarTween, starting it and adding it to the TweenManager.
 	 *
@@ -971,7 +1015,7 @@ class FlxTweenManager extends FlxBasic
 		tween.tween(Object, Values, Duration);
 		return add(tween);
 	}
-
+	
 	/**
 	 * Tweens some numeric value. Shorthand for creating a NumTween, starting it and adding it to the TweenManager. Using it in
 	 * conjunction with a TweenFunction requires more setup, but is faster than VarTween because it doesn't use Reflection.
@@ -999,7 +1043,41 @@ class FlxTweenManager extends FlxBasic
 		tween.tween(FromValue, ToValue, Duration, TweenFunction);
 		return add(tween);
 	}
-
+	
+	/**
+	 * Flickers the desired object
+	 *
+	 * @param   basic     The object to flicker
+	 * @param   duration  Duration of the tween, in seconds
+	 * @param   period    How often, in seconds, the visibility cycles
+	 * @param   options   A structure with flicker and tween options
+	 * @since 5.7.0
+	 */
+	public function flicker(basic:FlxBasic, duration = 1.0, period = 0.08, ?options:FlickerTweenOptions)
+	{
+		final tween = new FlickerTween(options, this);
+		tween.tween(basic, duration, period);
+		return add(tween);
+	}
+	
+	/**
+	 * Whether the object is flickering via this manager
+	 * @since 5.7.0
+	 */
+	public function isFlickering(basic:FlxBasic)
+	{
+		return containsTweensOf(basic, ["flicker"]);
+	}
+	
+	/**
+	 * Cancels all flicker tweens on the object
+	 * @since 5.7.0
+	 */
+	public function stopFlickering(basic:FlxBasic)
+	{
+		return cancelTweensOf(basic, ["flicker"]);
+	}
+	
 	/**
 	 * A simple shake effect for FlxSprite. Shorthand for creating a ShakeTween, starting it and adding it to the TweenManager.
 	 *
@@ -1020,7 +1098,7 @@ class FlxTweenManager extends FlxBasic
 		tween.tween(Sprite, Intensity, Duration, Axes);
 		return add(tween);
 	}
-
+	
 	/**
 	 * Tweens numeric value which represents angle. Shorthand for creating a AngleTween object, starting it and adding it to the TweenManager.
 	 *
@@ -1042,7 +1120,7 @@ class FlxTweenManager extends FlxBasic
 		tween.tween(FromAngle, ToAngle, Duration, Sprite);
 		return add(tween);
 	}
-
+	
 	/**
 	 * Tweens numeric value which represents color. Shorthand for creating a ColorTween object, starting it and adding it to a TweenPlugin.
 	 *
@@ -1064,7 +1142,7 @@ class FlxTweenManager extends FlxBasic
 		tween.tween(Duration, FromColor, ToColor, Sprite);
 		return add(tween);
 	}
-
+	
 	/**
 	 * Create a new LinearMotion tween.
 	 *
@@ -1091,7 +1169,7 @@ class FlxTweenManager extends FlxBasic
 		tween.setMotion(FromX, FromY, ToX, ToY, DurationOrSpeed, UseDuration);
 		return add(tween);
 	}
-
+	
 	/**
 	 * Create a new QuadMotion tween.
 	 *
@@ -1120,7 +1198,7 @@ class FlxTweenManager extends FlxBasic
 		tween.setMotion(FromX, FromY, ControlX, ControlY, ToX, ToY, DurationOrSpeed, UseDuration);
 		return add(tween);
 	}
-
+	
 	/**
 	 * Create a new CubicMotion tween.
 	 *
@@ -1150,7 +1228,7 @@ class FlxTweenManager extends FlxBasic
 		tween.setMotion(FromX, FromY, aX, aY, bX, bY, ToX, ToY, Duration);
 		return add(tween);
 	}
-
+	
 	/**
 	 * Create a new CircularMotion tween.
 	 *
@@ -1179,7 +1257,7 @@ class FlxTweenManager extends FlxBasic
 		tween.setMotion(CenterX, CenterY, Radius, Angle, Clockwise, DurationOrSpeed, UseDuration);
 		return add(tween);
 	}
-
+	
 	/**
 	 * Create a new LinearPath tween.
 	 *
@@ -1198,7 +1276,7 @@ class FlxTweenManager extends FlxBasic
 	public function linearPath(Object:FlxObject, Points:Array<FlxPoint>, DurationOrSpeed:Float = 1, UseDuration:Bool = true, ?Options:TweenOptions):LinearPath
 	{
 		var tween = new LinearPath(Options, this);
-
+		
 		if (Points != null)
 		{
 			for (point in Points)
@@ -1206,12 +1284,12 @@ class FlxTweenManager extends FlxBasic
 				tween.addPoint(point.x, point.y);
 			}
 		}
-
+		
 		tween.setObject(Object);
 		tween.setMotion(DurationOrSpeed, UseDuration);
 		return add(tween);
 	}
-
+	
 	/**
 	 * Create a new QuadPath tween.
 	 *
@@ -1230,7 +1308,7 @@ class FlxTweenManager extends FlxBasic
 	public function quadPath(Object:FlxObject, Points:Array<FlxPoint>, DurationOrSpeed:Float = 1, UseDuration:Bool = true, ?Options:TweenOptions):QuadPath
 	{
 		var tween = new QuadPath(Options, this);
-
+		
 		if (Points != null)
 		{
 			for (point in Points)
@@ -1238,28 +1316,28 @@ class FlxTweenManager extends FlxBasic
 				tween.addPoint(point.x, point.y);
 			}
 		}
-
+		
 		tween.setObject(Object);
 		tween.setMotion(DurationOrSpeed, UseDuration);
 		return add(tween);
 	}
-
+	
 	override public function destroy():Void
 	{
 		super.destroy();
 		FlxG.signals.preStateSwitch.remove(clear);
 	}
-
+	
 	override public function update(elapsed:Float):Void
 	{
 		// process finished tweens after iterating through main list, since finish() can manipulate FlxTween.list
 		var finishedTweens:Array<FlxTween> = null;
-
+		
 		for (tween in _tweens)
 		{
 			if (!tween.active)
 				continue;
-
+				
 			tween.update(elapsed);
 			if (tween.finished)
 			{
@@ -1268,7 +1346,7 @@ class FlxTweenManager extends FlxBasic
 				finishedTweens.push(tween);
 			}
 		}
-
+		
 		if (finishedTweens != null)
 		{
 			while (finishedTweens.length > 0)
@@ -1277,7 +1355,7 @@ class FlxTweenManager extends FlxBasic
 			}
 		}
 	}
-
+	
 	/**
 	 * Add a FlxTween.
 	 *
@@ -1292,14 +1370,14 @@ class FlxTweenManager extends FlxBasic
 		// Don't add a null object
 		if (Tween == null)
 			return null;
-
+			
 		_tweens.push(Tween);
-
+		
 		if (Start)
 			Tween.start();
 		return Tween;
 	}
-
+	
 	/**
 	 * Remove a FlxTween.
 	 *
@@ -1312,17 +1390,17 @@ class FlxTweenManager extends FlxBasic
 	{
 		if (Tween == null)
 			return null;
-
+			
 		Tween.active = false;
-
+		
 		if (Destroy)
 			Tween.destroy();
-
+			
 		FlxArrayUtil.fastSplice(_tweens, Tween);
-
+		
 		return Tween;
 	}
-
+	
 	/**
 	 * Removes all FlxTweens.
 	 */
@@ -1336,10 +1414,10 @@ class FlxTweenManager extends FlxBasic
 				tween.destroy();
 			}
 		}
-
+		
 		_tweens.splice(0, _tweens.length);
 	}
-
+	
 	/**
 	 * Cancels all related tweens on the specified object.
 	 *
@@ -1354,9 +1432,9 @@ class FlxTweenManager extends FlxBasic
 	 */
 	public function cancelTweensOf(Object:Dynamic, ?FieldPaths:Array<String>):Void
 	{
-		forEachTweensOf(Object, FieldPaths, function (tween) tween.cancel());
+		forEachTweensOf(Object, FieldPaths, function(tween) tween.cancel());
 	}
-
+	
 	/**
 	 * Immediately updates all tweens on the specified object with the specified fields that
 	 * are not looping (type `FlxTween.LOOPING` or `FlxTween.PINGPONG`) and `active` through
@@ -1380,51 +1458,49 @@ class FlxTweenManager extends FlxBasic
 	 */
 	public function completeTweensOf(Object:Dynamic, ?FieldPaths:Array<String>):Void
 	{
-		forEachTweensOf(Object, FieldPaths,
-			function (tween)
-			{
-				if ((tween.type & FlxTweenType.LOOPING) == 0 && (tween.type & FlxTweenType.PINGPONG) == 0 && tween.active)
-					tween.update(FlxMath.MAX_VALUE_FLOAT);
-			}
-		);
+		forEachTweensOf(Object, FieldPaths, function(tween)
+		{
+			if ((tween.type & FlxTweenType.LOOPING) == 0 && (tween.type & FlxTweenType.PINGPONG) == 0 && tween.active)
+				tween.update(FlxMath.MAX_VALUE_FLOAT);
+		});
 	}
-
+	
 	/**
 	 * Internal helper for iterating tweens with specific parameters.
 	 *
 	 * Note: loops backwards to allow removals.
 	 *
-	 * @param Object The object with tweens you are searching for.
-	 * @param FieldPaths Optional list of the tween field paths to check. If null or empty, any tween of the specified
-	 * object will match. Allows dot paths to check child properties.
-	 * @param Function The function to call on each matching tween.
+	 * @param   object      The object with tweens you are searching for.
+	 * @param   fieldPaths  List of the tween field paths to check. If `null` or empty, any tween of
+	 *                      the specified object will match. Allows dot paths to check child properties.
+	 * @param   func        The function to call on each matching tween.
 	 * 
 	 * @since 4.9.0
 	 */
-	function forEachTweensOf(Object:Dynamic, ?FieldPaths:Array<String>, Function:FlxTween->Void)
+	function forEachTweensOf(object:Dynamic, ?fieldPaths:Array<String>, func:FlxTween->Void)
 	{
-		if (Object == null)
+		if (object == null)
 			throw "Cannot cancel tween variables of an object that is null.";
-		
-		if (FieldPaths == null || FieldPaths.length == 0)
+			
+		if (fieldPaths == null || fieldPaths.length == 0)
 		{
 			var i = _tweens.length;
 			while (i-- > 0)
 			{
 				var tween = _tweens[i];
-				if (tween.isTweenOf(Object))
-					Function(tween);
+				if (tween.isTweenOf(object))
+					func(tween);
 			}
 		}
 		else
 		{
 			// check for dot paths and convert to object/field pairs
 			var propertyInfos = new Array<TweenProperty>();
-			for (fieldPath in FieldPaths)
+			for (fieldPath in fieldPaths)
 			{
-				var target = Object;
-				var path = fieldPath.split(".");
-				var field = path.pop();
+				var target = object;
+				final path = fieldPath.split(".");
+				final field = path.pop();
 				for (component in path)
 				{
 					target = Reflect.getProperty(target, component);
@@ -1433,25 +1509,37 @@ class FlxTweenManager extends FlxBasic
 				}
 				
 				if (Reflect.isObject(target))
-					propertyInfos.push({ object:target, field:field });
+					propertyInfos.push({object: target, field: field});
 			}
 			
 			var i = _tweens.length;
 			while (i-- > 0)
 			{
-				var tween = _tweens[i];
+				final tween = _tweens[i];
 				for (info in propertyInfos)
 				{
 					if (tween.isTweenOf(info.object, info.field))
 					{
-						Function(tween);
+						func(tween);
 						break;
 					}
-				} 
+				}
 			}
 		}
 	}
-
+	
+	/**
+	 * Crude helper to search for any tweens with the desired properties
+	 * 
+	 * @since 5.7.0
+	 */
+	function containsTweensOf(object:Dynamic, ?fieldPaths:Array<String>):Bool
+	{
+		var found = false;
+		forEachTweensOf(object, fieldPaths, (_) -> found = true);
+		return found;
+	}
+	
 	/**
 	 * Immediately updates all tweens that are not looping (type `FlxTween.LOOPING` or `FlxTween.PINGPONG`)
 	 * and `active` through their endings, triggering their `onComplete` callbacks.
@@ -1471,7 +1559,7 @@ class FlxTweenManager extends FlxBasic
 			if ((tween.type & FlxTweenType.LOOPING) == 0 && (tween.type & FlxTweenType.PINGPONG) == 0 && tween.active)
 				tween.update(FlxMath.MAX_VALUE_FLOAT);
 	}
-
+	
 	/**
 	 * Applies a function to all tweens
 	 *

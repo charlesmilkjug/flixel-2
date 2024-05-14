@@ -151,10 +151,10 @@ class FlxKeyManager<Key:Int, KeyList:FlxBaseKeyList> implements IFlxInputManager
 	public function checkStatus(KeyCode:Key, Status:FlxInputState):Bool
 	{
 		/*
-		Note: switch(KeyCode) { case ANY: } causes seg faults with
-		hashlink on linux. This should use ifs, until it is fixed.
-		See: https://github.com/HaxeFlixel/flixel/issues/2318
-		*/
+			Note: switch(KeyCode) { case ANY: } causes seg faults with
+			hashlink on linux. This should use ifs, until it is fixed.
+			See: https://github.com/HaxeFlixel/flixel/issues/2318
+		 */
 		
 		if (KeyCode == FlxKey.ANY)
 		{

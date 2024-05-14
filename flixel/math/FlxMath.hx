@@ -313,6 +313,7 @@ class FlxMath
 	{
 		return Math.sqrt(dx * dx + dy * dy);
 	}
+
 	#if !macro
 	/**
 	 * Find the distance (in pixels, rounded) between two FlxSprites, taking their origin into account
@@ -459,6 +460,7 @@ class FlxMath
 			return dx * dx + dy * dy < Distance * Distance;
 	}
 	#end
+
 	#end
 
 	/**

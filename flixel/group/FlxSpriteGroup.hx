@@ -53,6 +53,21 @@ class FlxTypedSpriteGroup<T:FlxSprite> extends FlxSprite
 	public var directAlpha:Bool = false;
 
 	/**
+	 * Whether getters like findMinX, width and height will only count sprites with exist = true.
+	 * Defaults to false for backwards compatibility.
+	 * 
+	 * @since 5.3.0
+	 */
+	public var checkExistsInBounds:Bool = false;
+	
+	/**
+	 * Whether getters like findMinX, width and height will only count visible sprites.
+	 * 
+	 * @since 5.3.0
+	 */
+	public var checkVisibleInBounds:Bool = false;
+	
+	/**
 	 * The maximum capacity of this group. Default is `0`, meaning no max capacity, and the group can just grow.
 	 */
 	public var maxSize(get, set):Int;
@@ -708,21 +723,21 @@ class FlxTypedSpriteGroup<T:FlxSprite> extends FlxSprite
 	override function set_x(Value:Float):Float
 	{
 		if (exists && x != Value)
-			transformChildren(xTransform, Value - x);// offset
+			transformChildren(xTransform, Value - x); // offset
 		return x = Value;
 	}
 
 	override function set_y(Value:Float):Float
 	{
 		if (exists && y != Value)
-			transformChildren(yTransform, Value - y);// offset
+			transformChildren(yTransform, Value - y); // offset
 		return y = Value;
 	}
 
 	override function set_angle(Value:Float):Float
 	{
 		if (exists && angle != Value)
-			transformChildren(angleTransform, Value - angle);// offset
+			transformChildren(angleTransform, Value - angle); // offset
 		return angle = Value;
 	}
 
@@ -823,10 +838,15 @@ class FlxTypedSpriteGroup<T:FlxSprite> extends FlxSprite
 	{
 		if (length == 0)
 			return 0;
-		
+
 		return findMaxXHelper() - findMinXHelper();
 	}
 
+	inline function ignoreBounds(sprite:Null<FlxSprite>)
+	{
+		return sprite == null || (checkExistsInBounds && !sprite.exists) || (checkVisibleInBounds && !sprite.visible);
+	}
+	
 	/**
 	 * Returns the left-most position of the left-most member.
 	 * If there are no members, x is returned.
@@ -845,13 +865,13 @@ class FlxTypedSpriteGroup<T:FlxSprite> extends FlxSprite
 		{
 			if (member == null)
 				continue;
-			
+
 			var minX:Float;
 			if (member.flixelType == SPRITEGROUP)
-				minX = (cast member:FlxSpriteGroup).findMinX();
+				minX = (cast member : FlxSpriteGroup).findMinX();
 			else
 				minX = member.x;
-			
+
 			if (minX < value)
 				value = minX;
 		}
@@ -874,15 +894,15 @@ class FlxTypedSpriteGroup<T:FlxSprite> extends FlxSprite
 		var value = Math.NEGATIVE_INFINITY;
 		for (member in _sprites)
 		{
-			if (member == null)
+			if (ignoreBounds(member))
 				continue;
-			
+
 			var maxX:Float;
 			if (member.flixelType == SPRITEGROUP)
-				maxX = (cast member:FlxSpriteGroup).findMaxX();
+				maxX = (cast member : FlxSpriteGroup).findMaxX();
 			else
 				maxX = member.x + member.width;
-			
+
 			if (maxX > value)
 				value = maxX;
 		}
@@ -901,7 +921,7 @@ class FlxTypedSpriteGroup<T:FlxSprite> extends FlxSprite
 	{
 		if (length == 0)
 			return 0;
-		
+
 		return findMaxYHelper() - findMinYHelper();
 	}
 	
@@ -921,15 +941,15 @@ class FlxTypedSpriteGroup<T:FlxSprite> extends FlxSprite
 		var value = Math.POSITIVE_INFINITY;
 		for (member in _sprites)
 		{
-			if (member == null)
+			if (ignoreBounds(member))
 				continue;
-			
+
 			var minY:Float;
 			if (member.flixelType == SPRITEGROUP)
-				minY = (cast member:FlxSpriteGroup).findMinY();
+				minY = (cast member : FlxSpriteGroup).findMinY();
 			else
 				minY = member.y;
-			
+
 			if (minY < value)
 				value = minY;
 		}
@@ -952,15 +972,15 @@ class FlxTypedSpriteGroup<T:FlxSprite> extends FlxSprite
 		var value = Math.NEGATIVE_INFINITY;
 		for (member in _sprites)
 		{
-			if (member == null)
+			if (ignoreBounds(member))
 				continue;
-			
+
 			var maxY:Float;
 			if (member.flixelType == SPRITEGROUP)
-				maxY = (cast member:FlxSpriteGroup).findMaxY();
+				maxY = (cast member : FlxSpriteGroup).findMaxY();
 			else
 				maxY = member.y + member.height;
-			
+
 			if (maxY > value)
 				value = maxY;
 		}

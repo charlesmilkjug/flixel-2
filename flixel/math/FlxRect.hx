@@ -1,9 +1,9 @@
 package flixel.math;
 
-import openfl.geom.Rectangle;
-import flixel.util.FlxPool;
 import flixel.util.FlxPool.IFlxPooled;
+import flixel.util.FlxPool;
 import flixel.util.FlxStringUtil;
+import openfl.geom.Rectangle;
 
 /**
  * Stores a rectangle.
@@ -13,6 +13,7 @@ class FlxRect implements IFlxPooled
 	public static var pool(get, never):IFlxPool<FlxRect>;
 
 	static var _pool:FlxPool<FlxRect> = new FlxPool(FlxRect.new.bind(0, 0, 0, 0));
+
 	// With the version below, this caused weird CI issues when FLX_NO_POINT_POOL is defined
 	// static var _pool = new FlxPool<FlxRect>(FlxRect);
 
@@ -227,16 +228,28 @@ class FlxRect implements IFlxPooled
 	/**
 	 * Returns true if this FlxRect contains the FlxPoint
 	 *
-	 * @param	Point	The FlxPoint to check
-	 * @return	True if the FlxPoint is within this FlxRect, otherwise false
+	 * @param   point  The FlxPoint to check
+	 * @return  True if the FlxPoint is within this FlxRect, otherwise false
 	 */
-	public inline function containsPoint(Point:FlxPoint):Bool
+	public inline function containsPoint(point:FlxPoint):Bool
 	{
-		var result = FlxMath.pointInFlxRect(Point.x, Point.y, this);
-		Point.putWeak();
+		final result = containsXY(point.x, point.y);
+		point.putWeak();
 		return result;
 	}
 
+	/**
+	 * Returns true if this FlxRect contains the FlxPoint
+	 *
+	 * @param   xPos  The x position to check
+	 * @param   yPos  The y position to check
+	 * @return  True if the FlxPoint is within this FlxRect, otherwise false
+	 */
+	public inline function containsXY(xPos:Float, yPos:Float):Bool
+	{
+		return xPos >= left && xPos <= right && yPos >= top && yPos <= bottom;
+	}
+	
 	/**
 	 * Add another rectangle to this one by filling in the
 	 * horizontal and vertical space between the two rectangles.
@@ -350,10 +363,10 @@ class FlxRect implements IFlxPooled
 	{
 		if (origin == null)
 			origin = FlxPoint.weak(0, 0);
-		
+
 		if (newRect == null)
 			newRect = FlxRect.get();
-		
+
 		degrees = degrees % 360;
 		if (degrees == 0)
 		{
@@ -363,7 +376,7 @@ class FlxRect implements IFlxPooled
 		
 		if (degrees < 0)
 			degrees += 360;
-		
+
 		var radians = FlxAngle.TO_RAD * degrees;
 		var cos = Math.cos(radians);
 		var sin = Math.sin(radians);
@@ -380,7 +393,7 @@ class FlxRect implements IFlxPooled
 		else if (degrees < 180)
 		{
 			newRect.x = x + origin.x + cos * right - sin * bottom;
-			newRect.y = y + origin.y + sin * left  + cos * bottom;
+			newRect.y = y + origin.y + sin * left + cos * bottom;
 		}
 		else if (degrees < 270)
 		{
@@ -393,8 +406,8 @@ class FlxRect implements IFlxPooled
 			newRect.y = y + origin.y + sin * right + cos * top;
 		}
 		// temp var, in case input rect is the output rect
-		var newHeight = Math.abs(cos * height) + Math.abs(sin * width );
-		newRect.width = Math.abs(cos * width ) + Math.abs(sin * height);
+		var newHeight = Math.abs(cos * height) + Math.abs(sin * width);
+		newRect.width = Math.abs(cos * width) + Math.abs(sin * height);
 		newRect.height = newHeight;
 		
 		origin.putWeak();
@@ -451,6 +464,20 @@ class FlxRect implements IFlxPooled
 		return result.set(x0, y0, x1 - x0, y1 - y0);
 	}
 
+	/**
+	 * The middle point of this rect
+	 * 
+	 * @param   point  The point to hold the result, if `null` a new one is created
+	 * @since 5.9.0
+	 */
+	public function getMidpoint(?point:FlxPoint)
+	{
+		if (point == null)
+			point = FlxPoint.get();
+			
+		return point.set(x + 0.5 * width, y + 0.5 * height);
+	}
+	
 	/**
 	 * Convert object to readable string name. Useful for debugging, save games, etc.
 	 */

@@ -18,6 +18,7 @@ import flixel.system.debug.interaction.tools.Eraser;
 import flixel.system.debug.interaction.tools.Mover;
 import flixel.system.debug.interaction.tools.Pointer;
 import flixel.system.debug.interaction.tools.Tool;
+import flixel.system.debug.interaction.tools.ToggleBounds;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSpriteUtil;
 #if !(FLX_NATIVE_CURSOR && FLX_MOUSE)
@@ -63,7 +64,7 @@ class Interaction extends Window
 		#else
 		false;
 		#end
-	
+
 	var _container:Sprite;
 	var _customCursor:Sprite;
 	var _tools:Array<Tool> = [];
@@ -90,6 +91,7 @@ class Interaction extends Window
 		addTool(new Mover());
 		addTool(new Eraser());
 		addTool(new Transform());
+		addTool(new ToggleBounds());
 
 		FlxG.signals.postDraw.add(postDraw);
 		FlxG.debugger.visibilityChanged.add(handleDebuggerVisibilityChanged);
@@ -252,7 +254,7 @@ class Interaction extends Window
 	{
 		if (!_tools.contains(tool))
 			return;
-		
+
 		// If there's no button just remove it
 		if (tool.button == null)
 		{
@@ -397,9 +399,11 @@ class Interaction extends Window
 		{
 			if (member != null && member.scrollFactor != null && member.isOnScreen())
 			{
-				// Render a red rectangle centered at the selected item
-				gfx.lineStyle(0.9, 0xff0000);
-				gfx.drawRect(member.x - FlxG.camera.scroll.x, member.y - FlxG.camera.scroll.y, member.width * 1.0, member.height * 1.0);
+				final margin = 0.5;
+				final scroll = FlxG.camera.scroll;
+				// Render a white rectangle centered at the selected item
+				gfx.lineStyle(1.0, 0xFFFFFF, 0.75);
+				gfx.drawRect(member.x - scroll.x - margin, member.y - scroll.y - margin, member.width + margin * 2, member.height + margin * 2);
 			}
 		}
 
@@ -618,7 +622,7 @@ class Interaction extends Window
 		addItemsWithinArea(items, state.members, area);
 		if (state.subState != null)
 			addItemsWithinState(items, state.subState, area);
-		
+
 		return items;
 	}
 	
@@ -655,7 +659,7 @@ class Interaction extends Window
 	{
 		if (state.subState != null)
 			return getTopItemWithinState(state.subState, area);
-		
+
 		return getTopItemWithinArea(state.members, area);
 	}
 
@@ -669,7 +673,7 @@ class Interaction extends Window
 	 * @param   members  Array where the method will recursively search for items.
 	 * @param   area     A rectangle that describes the area where the method should search within.
 	 */
-	@:deprecated("findItemsWithinArea is deprecated, use addItemsWithinArea")// since 5.6.0
+	@:deprecated("findItemsWithinArea is deprecated, use addItemsWithinArea") // since 5.6.0
 	public inline function findItemsWithinArea(items:Array<FlxBasic>, members:Array<FlxBasic>, area:FlxRect):Void
 	{
 		addItemsWithinArea(cast items, members, area);
@@ -696,7 +700,7 @@ class Interaction extends Window
 			// Ignore invisible or non-existent entities
 			if (member == null || !member.visible || !member.exists)
 				continue;
-			
+
 			final group = FlxTypedGroup.resolveSelectionGroup(member);
 			if (group != null)
 				addItemsWithinArea(items, group.members, area);
@@ -728,11 +732,11 @@ class Interaction extends Window
 			// Ignore invisible or non-existent entities
 			if (member == null || !member.visible || !member.exists)
 				continue;
-			
+
 			final group = FlxTypedGroup.resolveGroup(member);
 			if (group != null)
 				return getTopItemWithinArea(group.members, area);
-			
+
 			if (member is FlxObject)
 			{
 				final object:FlxObject = cast member;

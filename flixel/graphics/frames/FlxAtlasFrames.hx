@@ -29,7 +29,7 @@ class FlxAtlasFrames extends FlxFramesCollection
 	{
 		while (usedGraphics.length > 0)
 			usedGraphics.shift().decrementUseCount();
-		
+
 		super.destroy();
 	}
 
@@ -90,7 +90,7 @@ class FlxAtlasFrames extends FlxFramesCollection
 		// JSON-Hash
 		else
 		{
-			for (name=>frame in data.frames.toHash())
+			for (name => frame in data.frames.toHash())
 				texturePackerHelper(name, frame, frames, useFrameDuration);
 		}
 
@@ -254,6 +254,9 @@ class FlxAtlasFrames extends FlxFramesCollection
 
 		for (texture in data.nodes.SubTexture)
 		{
+			if (!texture.has.width && texture.has.w)
+				throw "Sparrow v1 is not supported, use Sparrow v2";
+				
 			var name = texture.att.name;
 			var trimmed = texture.has.frameX;
 			var rotated = (texture.has.rotated && texture.att.rotated == "true");
@@ -265,22 +268,36 @@ class FlxAtlasFrames extends FlxFramesCollection
 
 			var size = if (trimmed)
 			{
-				new Rectangle(Std.parseInt(texture.att.frameX), Std.parseInt(texture.att.frameY), Std.parseInt(texture.att.frameWidth),
+				FlxRect.get(Std.parseInt(texture.att.frameX), Std.parseInt(texture.att.frameY), Std.parseInt(texture.att.frameWidth),
 					Std.parseInt(texture.att.frameHeight));
 			}
 			else
 			{
-				new Rectangle(0, 0, rect.width, rect.height);
+				FlxRect.get(0, 0, rect.width, rect.height);
 			}
 
 			var angle = rotated ? FlxFrameAngle.ANGLE_NEG_90 : FlxFrameAngle.ANGLE_0;
 
-			var offset = FlxPoint.get(-size.left, -size.top);
+			var offset = FlxPoint.get(-size.x, -size.y);
 			var sourceSize = FlxPoint.get(size.width, size.height);
 
 			if (rotated && !trimmed)
 				sourceSize.set(size.height, size.width);
 
+			// Prevents issues caused by adding frames of size 0
+			if (rect.width == 0 || rect.height == 0)
+			{
+				if (!trimmed)
+					size.setSize(1, 1);
+					
+				var frame = frames.addEmptyFrame(size);
+				
+				frame.name = name;
+				frame.offset.copyFrom(offset);
+				
+				continue;
+			}
+			
 			frames.addAtlasFrame(rect, sourceSize, offset, name, angle, flipX, flipY);
 		}
 
@@ -432,7 +449,7 @@ class FlxAtlasFrames extends FlxFramesCollection
 	{
 		for (frame in collection.frames)
 			pushFrame(frame, overwriteHash);
-		
+
 		if (!usedGraphics.contains(collection.parent))
 		{
 			usedGraphics.push(collection.parent);
@@ -460,9 +477,9 @@ class FlxAtlasFrames extends FlxFramesCollection
 	}
 }
 
-@:deprecated("Use TexturePackerAtlas instead")// 5.4.0
+@:deprecated("Use TexturePackerAtlas instead") // 5.4.0
 typedef TexturePackerObject = TexturePackerAtlas;
-@:deprecated("Use TexturePackerAtlasFrame instead")// 5.4.0
+@:deprecated("Use TexturePackerAtlasFrame instead") // 5.4.0
 typedef TexturePackerFrameData = TexturePackerAtlasFrame;
-@:deprecated("Use AtlasRect instead")// 5.4.0
+@:deprecated("Use AtlasRect instead") // 5.4.0
 typedef TexturePackerFrameRect = AtlasRect;

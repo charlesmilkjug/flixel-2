@@ -15,7 +15,7 @@ import flixel.system.ui.FlxSystemButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
 
-@:bitmap("assets/images/debugger/windowHandle.png")
+#if FLX_DEBUG @:bitmap("assets/images/debugger/windowHandle.png") #end
 private class GraphicWindowHandle extends BitmapData {}
 
 /**
@@ -309,7 +309,7 @@ class Window extends Sprite
 	{
 		if (FlxG.save.data.windowSettings == null)
 			initWindowsSave();
-		
+
 		FlxG.save.data.windowSettings[_id] = visible;
 		FlxG.save.flush();
 	}
